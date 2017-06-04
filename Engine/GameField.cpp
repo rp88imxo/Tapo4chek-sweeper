@@ -38,152 +38,155 @@ void GameField::Draw(Graphics& gfx)
 		Sprites::DrawRightBorder(gfx, 266, 180);
 		Sprites::DrawTopBoard(gfx, 0, 0);
 	}
-	for (int x = 0; x < width; x++)
-		for (int y = 0; y < height; y++)
-		{
-			if (!isGameOver)
+	if (gameState != GameStates::Victory)
+	{
+		for (int x = 0; x < width; x++)
+			for (int y = 0; y < height; y++)
 			{
-				switch (Field[y * width + x].statement)
+
+
+				if (gameState != GameStates::IsOver)
 				{
-				case Tile::state::locked:
-					Sprites::DrawLockedCell(gfx, x_field + x * dimension, y_field + y * dimension);
-					break;
-				case Tile::state::revealed:
-					Sprites::DrawRevealedCell(gfx, x_field + x * dimension, y_field + y * dimension);
-					break;
-				case Tile::state::flagged:
-					Sprites::DrawFlag(gfx, x_field + x * dimension, y_field + y * dimension);
-					break;
-				case Tile::state::numbered:
-					Field[y * width + x].DrawMinesNumber(gfx, x_field + x * dimension, y_field + y * dimension);
-				}
-			}
-			else
-			{
-				if (Field[y * width + x].HasBomb() && Field[y * width + x].statement == Tile::state::flagged)
-				{
-					Sprites::DrawBombDestructed(gfx, x_field + x * dimension, y_field + y * dimension);
+					switch (Field[y * width + x].statement)
+					{
+					case Tile::state::locked:
+						Sprites::DrawLockedCell(gfx, x_field + x * dimension, y_field + y * dimension);
+						break;
+					case Tile::state::revealed:
+						Sprites::DrawRevealedCell(gfx, x_field + x * dimension, y_field + y * dimension);
+						break;
+					case Tile::state::flagged:
+						Sprites::DrawFlag(gfx, x_field + x * dimension, y_field + y * dimension);
+						break;
+					case Tile::state::numbered:
+						Field[y * width + x].DrawMinesNumber(gfx, x_field + x * dimension, y_field + y * dimension);
+					}
 				}
 				else
 				{
-					if (Field[y * width + x].bombedYou)
+					if (Field[y * width + x].HasBomb() && Field[y * width + x].statement == Tile::state::flagged)
 					{
-						Sprites::DrawBombBombedYou(gfx, x_field + x * dimension, y_field + y * dimension);
+						Sprites::DrawBombDestructed(gfx, x_field + x * dimension, y_field + y * dimension);
 					}
 					else
 					{
-						if (Field[y * width + x].HasBomb())
+						if (Field[y * width + x].bombedYou)
 						{
-							Sprites::DrawBombLive(gfx, x_field + x * dimension, y_field + y * dimension);
+							Sprites::DrawBombBombedYou(gfx, x_field + x * dimension, y_field + y * dimension);
 						}
-					}
-				}
-				if (Field[y * width + x].statement == Tile::state::locked && !Field[y * width + x].HasBomb())
-				{
-					Sprites::DrawLockedCell(gfx, x_field + x * dimension, y_field + y * dimension);
-				}
-				if (Field[y * width + x].statement == Tile::state::flagged && !Field[y * width + x].HasBomb())
-				{
-					Sprites::DrawFlag(gfx, x_field + x * dimension, y_field + y * dimension);
-				}
-				if (Field[y * width + x].statement == Tile::state::revealed && !Field[y * width + x].HasBomb())
-				{
-					//here must be a add condition for numbers
-					Sprites::DrawRevealedCell(gfx, x_field + x * dimension, y_field + y * dimension);
-				}
-				if (Field[y * width + x].statement == Tile::state::numbered)
-				{
-					Field[y * width + x].DrawMinesNumber(gfx, x_field + x * dimension, y_field + y * dimension);
-				}
-
-			}
-		}
-}
-
-void GameField::Update(Mouse& mouse)
-{
-	if (!isGameOver)
-	{
-		Vec2 mousepos;
-		if (mouse.LeftIsPressed() && FieldRect.isInsideRect(mouse))
-		{
-			mousepos = { mouse.GetPosX() - x_field,mouse.GetPosY() - y_field };
-
-			mousepos.x /= dimension;
-			mousepos.y /= dimension;
-			if (!Field[mousepos.y * width + mousepos.x].HasBomb() && Field[mousepos.y * width + mousepos.x].statement == Tile::state::locked)
-			{
-				int bombsNumber = 0;
-				bool hasAnyBomb = false;
-				for (int x = mousepos.x - 1; x <= mousepos.x + 1; x++)
-					for (int y = mousepos.y - 1; y <= mousepos.y + 1; y++)
-					{
-						if (x > width - 1 || y > height - 1 || x < 0 || y < 0)
-							continue;
-						if (Field[y * width + x].HasBomb())
+						else
 						{
-							bombsNumber++;
-							hasAnyBomb = hasAnyBomb || Field[y * width + x].HasBomb();
-						}
-					}
-				if (hasAnyBomb)
-				{
-					Field[mousepos.y * width + mousepos.x].statement = { Tile::state::numbered };
-					Field[mousepos.y * width + mousepos.x].bombsAround = bombsNumber;
-				}
-				if (!hasAnyBomb)
-				{
-					for (int x = mousepos.x - 1; x <= mousepos.x + 1; x++)
-						for (int y = mousepos.y - 1; y <= mousepos.y + 1; y++)
-						{
-							if (x > width - 1 || y > height - 1 || x < 0 || y < 0)
-								continue;
-							if (Field[y * width + x].statement != Tile::state::numbered)
+							if (Field[y * width + x].HasBomb())
 							{
-								Field[y * width + x].statement = { Tile::state::revealed };
+								Sprites::DrawBombLive(gfx, x_field + x * dimension, y_field + y * dimension);
 							}
-							
 						}
-				}
-			}
-			else
-			{
-				if (Field[mousepos.y * width + mousepos.x].HasBomb())
-				{
-					Field[mousepos.y * width + mousepos.x].bombedYou = true;
-					isGameOver = true;
-				}
-				
-			}
-		}
-		if (mouse.RightIsPressed() && FieldRect.isInsideRect(mouse))
-		{
-			mousepos = { mouse.GetPosX() - x_field,mouse.GetPosY() - y_field };
+					}
+					if (Field[y * width + x].statement == Tile::state::locked && !Field[y * width + x].HasBomb())
+					{
+						Sprites::DrawLockedCell(gfx, x_field + x * dimension, y_field + y * dimension);
+					}
+					if (Field[y * width + x].statement == Tile::state::flagged && !Field[y * width + x].HasBomb())
+					{
+						Sprites::DrawFlag(gfx, x_field + x * dimension, y_field + y * dimension);
+					}
+					if (Field[y * width + x].statement == Tile::state::revealed && !Field[y * width + x].HasBomb())
+					{
+						Sprites::DrawRevealedCell(gfx, x_field + x * dimension, y_field + y * dimension);
+					}
+					if (Field[y * width + x].statement == Tile::state::numbered)
+					{
+						Field[y * width + x].DrawMinesNumber(gfx, x_field + x * dimension, y_field + y * dimension);
+					}
 
-			mousepos.x /= dimension;
-			mousepos.y /= dimension;
-			if (Field[mousepos.y * width + mousepos.x].statement != Tile::state::flagged && flagsNumber > 0 )
-			{
-				
-				flagsNumber--;
-				Field[mousepos.y * width + mousepos.x].statement = Tile::state::flagged;
-			}
-			else
-			{
-				if (Field[mousepos.y * width + mousepos.x].statement == Tile::state::flagged)
-				{
-					flagsNumber++;
-					Field[mousepos.y * width + mousepos.x].statement = Tile::state::locked;
 				}
+
+
 			}
-		}
+	}
+	else
+	{
+
 	}
 }
 
-bool GameField::isOver() const
+void GameField::Update(Mouse& mouse,Keyboard& kbd)
 {
-	return isGameOver;
+	if (gameState != GameStates::IsOver)
+	{
+		if (gameState == GameStates::Started)
+		{
+			Vec2 mousepos;
+			if (mouse.LeftIsPressed() && FieldRect.isInsideRect(mouse))
+			{
+				mousepos = { mouse.GetPosX() - x_field,mouse.GetPosY() - y_field };
+
+				mousepos.x /= dimension;
+				mousepos.y /= dimension;
+				if (!Field[mousepos.y * width + mousepos.x].HasBomb() && Field[mousepos.y * width + mousepos.x].statement == Tile::state::locked)
+				{
+					checkingForMines(mousepos.x, mousepos.y);
+				}
+				else
+				{
+					if (Field[mousepos.y * width + mousepos.x].HasBomb())
+					{
+						Field[mousepos.y * width + mousepos.x].bombedYou = true;
+						gameState = { GameStates::IsOver };
+					}
+
+				}
+			}
+			if (mouse.RightIsPressed() && FieldRect.isInsideRect(mouse))
+			{
+				mousepos = { mouse.GetPosX() - x_field,mouse.GetPosY() - y_field };
+
+				mousepos.x /= dimension;
+				mousepos.y /= dimension;
+				if (Field[mousepos.y * width + mousepos.x].statement != Tile::state::flagged && flagsNumber > 0 && Field[mousepos.y * width + mousepos.x].statement != Tile::state::revealed)
+				{
+
+					flagsNumber--;
+					Field[mousepos.y * width + mousepos.x].statement = Tile::state::flagged;
+					if (Field[mousepos.y * width + mousepos.x].HasBomb())
+					{
+						nMines--;
+					}
+				}
+				else
+				{
+					if (Field[mousepos.y * width + mousepos.x].statement == Tile::state::flagged)
+					{
+						flagsNumber++;
+						Field[mousepos.y * width + mousepos.x].statement = Tile::state::locked;
+						if (Field[mousepos.y * width + mousepos.x].HasBomb())
+						{
+							nMines++;
+						}
+					}
+					
+				}
+			}
+			bool allOpenedOrFlaggedOrNumbered = true;
+			for (int x = 0; x < width; x++)
+				for (int y = 0; y < height; y++)
+				{
+					allOpenedOrFlaggedOrNumbered = allOpenedOrFlaggedOrNumbered && nMines == 0 && (Field[y * width + x].statement == Tile::state::flagged || Field[y * width + x].statement == Tile::state::numbered || Field[y * width + x].statement == Tile::state::revealed);
+				}
+			if (allOpenedOrFlaggedOrNumbered)
+				gameState = { GameStates::Victory };
+		}
+		else
+		{
+			if(gameState == GameStates::NotStarted)
+				if (kbd.KeyIsPressed(VK_SPACE))
+					gameState = { GameStates::Started };
+		}
+	
+	}
 }
+
+
 
 void GameField::DrawNumberTime(int x_in,Graphics& gfx,int num) const
 {
@@ -212,6 +215,63 @@ void GameField::DrawNumberTime(int x_in,Graphics& gfx,int num) const
 	case 9: Sprites::DrawNumberNine(gfx, 259 - num_off, 8);
 		break;
 	}
+}
+
+void GameField::checkingForMines(int x_in, int y_in)
+{
+	int mines_quant = 0;
+	bool hasAnyBomb = false;
+	bool allrevealed = true;
+	for (int x = x_in - 1; x <= x_in + 1; x++)
+		for (int y = y_in - 1; y <= y_in + 1; y++)
+		{
+			if (x > width - 1 || y > height - 1 || x < 0 || y < 0)
+				continue;
+			if (Field[y * width + x].HasBomb())
+			{
+				mines_quant++;
+				hasAnyBomb = hasAnyBomb || Field[y * width + x].HasBomb();
+			}
+			if (Field[y * width + x].statement == Tile::state::locked)
+			{
+				allrevealed = false;
+			}
+
+		}
+			if (hasAnyBomb)
+			{
+				Field[y_in * width + x_in].statement = { Tile::state::numbered };
+				Field[y_in * width + x_in].bombsAround = mines_quant;
+				return;
+			}
+			if (allrevealed)
+			{
+				return;
+			}
+			if (!hasAnyBomb)
+			{
+				for (int x = x_in - 1; x <= x_in + 1; x++)
+					for (int y = y_in - 1; y <= y_in + 1; y++)
+					{
+						if (x > width - 1 || y > height - 1 || x < 0 || y < 0)
+							continue;
+						if (Field[y * width + x].statement != Tile::state::numbered || Field[y * width + x].statement != Tile::state::flagged)
+						{
+							Field[y * width + x].statement = { Tile::state::revealed };
+
+						}
+					}
+				for (int x = x_in - 1; x <= x_in + 1; x++)
+					for (int y = y_in - 1; y <= y_in + 1; y++)
+					{
+						if (Field[y * width + x].statement != Tile::state::numbered || Field[y * width + x].statement != Tile::state::flagged)
+						{
+							checkingForMines(x, y);
+						}
+					}
+			}
+
+		
 }
 
 void GameField::Tile::SpawnBomb()

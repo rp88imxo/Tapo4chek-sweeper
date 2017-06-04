@@ -4,6 +4,7 @@
 #include "Mouse.h"
 #include <random>
 #include "Graphics.h"
+#include "Keyboard.h"
 
 
 class GameField
@@ -43,6 +44,13 @@ private:
 		bool isHasBomb = false;
 	};
 public:
+	enum class GameStates
+	{
+		NotStarted,
+		Started,
+		IsOver,
+		Victory
+	};
 	enum class Number
 	{
 		zero,
@@ -59,13 +67,13 @@ public:
 	GameField(int nMines_in, int xfield, int yfield, std::mt19937 rng);
 	void spawnBombs(std::mt19937 rng);
 	void Draw(Graphics& gfx);
-	void Update(Mouse& mouse);
-	bool isOver() const;
+	void Update(Mouse& mouse, Keyboard& kbd);
 	void DrawNumberTime(int x_in,Graphics& gfx, int num) const;
 	Number number = {Number::zero};
+	GameStates gameState = { GameStates::NotStarted };
+	void checkingForMines(int x_in, int y_in);
 private:
 	int flagsNumber = 10;
-	bool isGameOver = false;
 	RectF FieldRect;
 	static constexpr int dimension = 16;
 	static constexpr int width = 16;

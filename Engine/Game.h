@@ -19,6 +19,7 @@
  *	along with The Chili DirectX Framework.  If not, see <http://www.gnu.org/licenses/>.  *
  ******************************************************************************************/
 #pragma once
+#pragma comment(linker, "/STACK:899977216")
 
 #include "Keyboard.h"
 #include "Mouse.h"
