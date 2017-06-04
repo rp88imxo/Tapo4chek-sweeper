@@ -21,10 +21,14 @@
 #include "MainWindow.h"
 #include "Game.h"
 
+
+
 Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
-	gfx( wnd )
+	gfx( wnd ),
+	rng(std::random_device()()),
+	game_field(10,10,52,rng)
 {
 }
 
@@ -38,9 +42,13 @@ void Game::Go()
 
 void Game::UpdateModel()
 {
+	if (!game_field.isOver())
+	{
+		game_field.Update(wnd.mouse);
+	}
 }
 
 void Game::ComposeFrame()
 {
-
+	game_field.Draw(gfx);
 }

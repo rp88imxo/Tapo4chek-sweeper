@@ -23,7 +23,7 @@
 #include "Keyboard.h"
 #include "Mouse.h"
 #include "Graphics.h"
-
+#include "GameField.h"
 
 
 class Game
@@ -43,6 +43,8 @@ private:
 	MainWindow& wnd;
 	Graphics gfx;
 	/********************************/
-	/*  User Variables              */
+	/*  User Variables      */
+	std::mt19937 rng;
+	GameField game_field;
 	/********************************/
 };
