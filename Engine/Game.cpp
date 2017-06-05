@@ -28,7 +28,7 @@ Game::Game( MainWindow& wnd )
 	wnd( wnd ),
 	gfx( wnd ),
 	rng(std::random_device()()),
-	game_field(2,10,52,rng)
+	game_field(10,10,52,rng)
 {
 }
 

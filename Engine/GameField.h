@@ -68,12 +68,12 @@ public:
 	void spawnBombs(std::mt19937 rng);
 	void Draw(Graphics& gfx);
 	void Update(Mouse& mouse, Keyboard& kbd);
-	void DrawNumberTime(int x_in,Graphics& gfx, int num) const;
+	void DrawNumberFlags(int x_in,Graphics& gfx, int num) const;
 	Number number = {Number::zero};
 	GameStates gameState = { GameStates::NotStarted };
 	void checkingForMines(int x_in, int y_in);
 private:
-	int flagsNumber = 10;
+	int flagsNumber;
 	RectF FieldRect;
 	static constexpr int dimension = 16;
 	static constexpr int width = 16;

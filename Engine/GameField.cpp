@@ -9,14 +9,15 @@ GameField::GameField(int nMines_in,int xfield,int yfield,std::mt19937 rng)
 	x_field = xfield;
 	y_field = yfield;
 	spawnBombs(rng);
+	flagsNumber = nMines;
 }
 
 void GameField::spawnBombs(std::mt19937 rng)
 {
 	for (int i = 0; i < nMines; i++)
 	{
-		std::uniform_int_distribution<int> xDistr(0, width);
-		std::uniform_int_distribution<int> yDistr(0, height);
+		std::uniform_int_distribution<int> xDistr(0, width - 1);
+		std::uniform_int_distribution<int> yDistr(0, height - 1);
 		if (Field[yDistr(rng) * width + xDistr(rng)].HasBomb())
 		{
 			i--;
@@ -38,6 +39,7 @@ void GameField::Draw(Graphics& gfx)
 		Sprites::DrawRightBorder(gfx, 266, 180);
 		Sprites::DrawTopBoard(gfx, 0, 0);
 	}
+	DrawNumberFlags(flagsNumber, gfx, 1);
 	if (gameState != GameStates::Victory)
 	{
 		for (int x = 0; x < width; x++)
@@ -143,7 +145,7 @@ void GameField::Update(Mouse& mouse,Keyboard& kbd)
 
 				mousepos.x /= dimension;
 				mousepos.y /= dimension;
-				if (Field[mousepos.y * width + mousepos.x].statement != Tile::state::flagged && flagsNumber > 0 && Field[mousepos.y * width + mousepos.x].statement != Tile::state::revealed)
+				if (Field[mousepos.y * width + mousepos.x].statement != Tile::state::flagged && flagsNumber > 0 && Field[mousepos.y * width + mousepos.x].statement == Tile::state::locked)
 				{
 
 					flagsNumber--;
@@ -188,33 +190,88 @@ void GameField::Update(Mouse& mouse,Keyboard& kbd)
 
 
 
-void GameField::DrawNumberTime(int x_in,Graphics& gfx,int num) const
+void GameField::DrawNumberFlags(int x_in,Graphics& gfx,int num) const
 {
 	int x = x_in;
+	x %= 10;
 	int num_off = (num - 1) * 13;
 	switch (x)
 	{
-	case 0: Sprites::DrawNumberZero(gfx,259 - num_off,8);
+	case 0: Sprites::DrawNumberZero(gfx,42 - num_off,14);
 		break;
-	case 1: Sprites::DrawNumberOne(gfx, 259 - num_off, 8);
+	case 1: Sprites::DrawNumberOne(gfx, 42 - num_off, 14);
 		break;
-	case 2: Sprites::DrawNumberTwo(gfx, 259 - num_off, 8);
+	case 2: Sprites::DrawNumberTwo(gfx, 42 - num_off, 14);
 		break;
-	case 3: Sprites::DrawNumberThree(gfx, 259 - num_off, 8);
+	case 3: Sprites::DrawNumberThree(gfx, 42 - num_off, 14);
 		break;
-	case 4: Sprites::DrawNumberFour(gfx, 259 - num_off, 8);
+	case 4: Sprites::DrawNumberFour(gfx, 42 - num_off, 14);
 		break;
-	case 5: Sprites::DrawNumberFive(gfx, 259 - num_off, 8);
+	case 5: Sprites::DrawNumberFive(gfx, 42 - num_off, 14);
 		break;
-	case 6: Sprites::DrawNumberSix(gfx, 259 - num_off, 8);
+	case 6: Sprites::DrawNumberSix(gfx, 42 - num_off, 14);
 		break;
-	case 7: Sprites::DrawNumberSeven(gfx, 259 - num_off, 8);
+	case 7: Sprites::DrawNumberSeven(gfx, 42 - num_off, 14);
 		break;
-	case 8: Sprites::DrawNumberEight(gfx, 259 - num_off, 8);
+	case 14: Sprites::DrawNumberEight(gfx, 42 - num_off, 14);
 		break;
-	case 9: Sprites::DrawNumberNine(gfx, 259 - num_off, 8);
+	case 9: Sprites::DrawNumberNine(gfx, 42 - num_off, 14);
 		break;
 	}
+	num_off += 13;
+	x = x_in;
+	x /= 10;
+	x %= 10;
+	switch (x)
+	{
+	case 0: Sprites::DrawNumberZero(gfx, 42 - num_off, 14);
+		break;
+	case 1: Sprites::DrawNumberOne(gfx, 42 - num_off, 14);
+		break;
+	case 2: Sprites::DrawNumberTwo(gfx, 42 - num_off, 14);
+		break;
+	case 3: Sprites::DrawNumberThree(gfx, 42 - num_off, 14);
+		break;
+	case 4: Sprites::DrawNumberFour(gfx, 42 - num_off, 14);
+		break;
+	case 5: Sprites::DrawNumberFive(gfx, 42 - num_off, 14);
+		break;
+	case 6: Sprites::DrawNumberSix(gfx, 42 - num_off, 14);
+		break;
+	case 7: Sprites::DrawNumberSeven(gfx, 42 - num_off, 14);
+		break;
+	case 14: Sprites::DrawNumberEight(gfx, 42 - num_off, 14);
+		break;
+	case 9: Sprites::DrawNumberNine(gfx, 42 - num_off, 14);
+		break;
+	}
+	num_off += 13;
+	x = x_in;
+	x /= 100;
+	switch (x)
+	{
+	case 0: Sprites::DrawNumberZero(gfx, 42 - num_off, 14);
+		break;
+	case 1: Sprites::DrawNumberOne(gfx, 42 - num_off, 14);
+		break;
+	case 2: Sprites::DrawNumberTwo(gfx, 42 - num_off, 14);
+		break;
+	case 3: Sprites::DrawNumberThree(gfx, 42 - num_off, 14);
+		break;
+	case 4: Sprites::DrawNumberFour(gfx, 42 - num_off, 14);
+		break;
+	case 5: Sprites::DrawNumberFive(gfx, 42 - num_off, 14);
+		break;
+	case 6: Sprites::DrawNumberSix(gfx, 42 - num_off, 14);
+		break;
+	case 7: Sprites::DrawNumberSeven(gfx, 42 - num_off, 14);
+		break;
+	case 14: Sprites::DrawNumberEight(gfx, 42 - num_off, 14);
+		break;
+	case 9: Sprites::DrawNumberNine(gfx, 42 - num_off, 14);
+		break;
+	}
+
 }
 
 void GameField::checkingForMines(int x_in, int y_in)
@@ -264,6 +321,8 @@ void GameField::checkingForMines(int x_in, int y_in)
 				for (int x = x_in - 1; x <= x_in + 1; x++)
 					for (int y = y_in - 1; y <= y_in + 1; y++)
 					{
+						if (x > width - 1 || y > height - 1 || x < 0 || y < 0)
+							continue;
 						if (Field[y * width + x].statement != Tile::state::numbered || Field[y * width + x].statement != Tile::state::flagged)
 						{
 							checkingForMines(x, y);
