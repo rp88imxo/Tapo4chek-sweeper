@@ -67,14 +67,17 @@ public:
 	GameField(int nMines_in, int xfield, int yfield, std::mt19937 rng);
 	void spawnBombs(std::mt19937 rng);
 	void Draw(Graphics& gfx);
-	void Update(Mouse& mouse, Keyboard& kbd);
+	void Update(Mouse& mouse, Keyboard& kbd, float second);
 	void DrawNumberFlags(int x_in,Graphics& gfx, int num) const;
+	void DrawTimer(int x_in, Graphics& gfx, int num) const;
 	Number number = {Number::zero};
 	GameStates gameState = { GameStates::NotStarted };
 	void checkingForMines(int x_in, int y_in);
 private:
+	bool isTimeAllowedToDraw = false;
 	int flagsNumber;
 	RectF FieldRect;
+	int secundomer = 0;
 	static constexpr int dimension = 16;
 	static constexpr int width = 16;
 	static constexpr int height = 16;

@@ -35,7 +35,13 @@ Game::Game( MainWindow& wnd )
 void Game::Go()
 {
 	gfx.BeginFrame();	
+	dt = ft.Mark();
+	counter = 0;
 	UpdateModel();
+	if (secondTimer > 0.01666666666666666666666666666667f * 60.f)
+		secondTimer = 0;
+	secondTimer += dt;
+	counter += dt;
 	ComposeFrame();
 	gfx.EndFrame();
 }
@@ -44,7 +50,7 @@ void Game::UpdateModel()
 {
 	if (game_field.gameState != GameField::GameStates::IsOver)
 	{
-		game_field.Update(wnd.mouse,wnd.kbd);
+		game_field.Update(wnd.mouse,wnd.kbd,secondTimer);
 	}
 }
 
