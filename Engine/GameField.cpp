@@ -1,5 +1,6 @@
 #include "GameField.h"
 #include "SpritesMinesweeper.h"
+#include "Game.h"
 
 GameField::GameField(int nMines_in,int xfield,int yfield,std::mt19937 rng)
 	:
@@ -146,34 +147,38 @@ void GameField::Update(Mouse& mouse,Keyboard& kbd,float second)
 
 				}
 			}
-			if (mouse.RightIsPressed() && FieldRect.isInsideRect(mouse))
+			if (counterPerClicks > 0.0166666667 * 4.5f)
 			{
-				mousepos = { mouse.GetPosX() - x_field,mouse.GetPosY() - y_field };
-
-				mousepos.x /= dimension;
-				mousepos.y /= dimension;
-				if (Field[mousepos.y * width + mousepos.x].statement != Tile::state::flagged && flagsNumber > 0 && Field[mousepos.y * width + mousepos.x].statement == Tile::state::locked)
+				counterPerClicks = 0;
+				if (mouse.RightIsPressed() && FieldRect.isInsideRect(mouse))
 				{
+					mousepos = { mouse.GetPosX() - x_field,mouse.GetPosY() - y_field };
 
-					flagsNumber--;
-					Field[mousepos.y * width + mousepos.x].statement = Tile::state::flagged;
-					if (Field[mousepos.y * width + mousepos.x].HasBomb())
+					mousepos.x /= dimension;
+					mousepos.y /= dimension;
+					if (Field[mousepos.y * width + mousepos.x].statement != Tile::state::flagged && flagsNumber > 0 && Field[mousepos.y * width + mousepos.x].statement == Tile::state::locked)
 					{
-						nMines--;
-					}
-				}
-				else
-				{
-					if (Field[mousepos.y * width + mousepos.x].statement == Tile::state::flagged)
-					{
-						flagsNumber++;
-						Field[mousepos.y * width + mousepos.x].statement = Tile::state::locked;
+
+						flagsNumber--;
+						Field[mousepos.y * width + mousepos.x].statement = Tile::state::flagged;
 						if (Field[mousepos.y * width + mousepos.x].HasBomb())
 						{
-							nMines++;
+							nMines--;
 						}
 					}
-					
+					else
+					{
+						if (Field[mousepos.y * width + mousepos.x].statement == Tile::state::flagged)
+						{
+							flagsNumber++;
+							Field[mousepos.y * width + mousepos.x].statement = Tile::state::locked;
+							if (Field[mousepos.y * width + mousepos.x].HasBomb())
+							{
+								nMines++;
+							}
+						}
+
+					}
 				}
 			}
 			bool allOpenedOrFlaggedOrNumbered = true;
@@ -193,6 +198,7 @@ void GameField::Update(Mouse& mouse,Keyboard& kbd,float second)
 		}
 	
 	}
+	counterPerClicks += 0.0166666667;
 }
 
 

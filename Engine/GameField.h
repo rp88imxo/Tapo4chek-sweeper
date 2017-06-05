@@ -74,6 +74,7 @@ public:
 	GameStates gameState = { GameStates::NotStarted };
 	void checkingForMines(int x_in, int y_in);
 private:
+	float counterPerClicks = 0;
 	bool isTimeAllowedToDraw = false;
 	int flagsNumber;
 	RectF FieldRect;

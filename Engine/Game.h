@@ -47,7 +47,6 @@ private:
 	/*  User Variables      */
 	FrameTimer ft;
 	float dt;
-	float counter = 0;
 	float secondTimer = 0;
 	std::mt19937 rng;
 	GameField game_field;

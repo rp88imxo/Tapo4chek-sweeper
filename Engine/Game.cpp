@@ -22,7 +22,6 @@
 #include "Game.h"
 
 
-
 Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
@@ -36,12 +35,10 @@ void Game::Go()
 {
 	gfx.BeginFrame();	
 	dt = ft.Mark();
-	counter = 0;
 	UpdateModel();
 	if (secondTimer > 0.01666666666666666666666666666667f * 60.f)
 		secondTimer = 0;
 	secondTimer += dt;
-	counter += dt;
 	ComposeFrame();
 	gfx.EndFrame();
 }
